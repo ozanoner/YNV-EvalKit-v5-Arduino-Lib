@@ -1,0 +1,25 @@
+
+#pragma once
+
+#include "anim.h"
+#include "ecd.h"
+
+namespace ynv
+{
+namespace anim
+{
+
+class AnimToggle : public Anim<ynv::ecd::ECDBase>
+{
+   public:
+    AnimToggle(ynv::ecd::ECDBase& display) : Anim<ynv::ecd::ECDBase>(display) { }
+
+   protected:
+    void transition() override
+    {
+        m_display.toggle();  // Toggle the display state
+    }
+};
+
+}  // namespace anim
+}  // namespace ynv

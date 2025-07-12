@@ -1,31 +1,109 @@
 
 #include <Arduino.h>
 
-#include "evalkitv5_led_array.h"
+#include "driverv5_board.h"
+#include "evalkit_anims.h"
+#include "evalkit_displays.h"
+
+// Specify the display type attached to the EvalKit v5
+#define DISPLAY_ATTACHED ynv::ecd::EvalkitDisplays::ECDEvalkitDisplay_t::EVALKIT_DISP_DOT_NUMBER_DISPLAY
+
+auto& board    = ynv::driverv5::Board::getInstance();
+auto& displays = ynv::ecd::EvalkitDisplays::getInstance();
+auto& anims    = ynv::anim::EvalkitAnims::getInstance();
 
 void setup()
 {
-    pinMode(MCU_PWR_ON, OUTPUT);  // Keep the Board Power ON
-    digitalWrite(MCU_PWR_ON, HIGH);
-    delay(1000);  
+    displays.init();               // Initialize the ECD displays
+    board.init();                  // Initialize the board
+    anims.init(DISPLAY_ATTACHED);  // Initialize the animations for the attached display
 
-    Serial.begin(9600);
-    Serial.println("Hello, EvalKit!");
-    delay(1000);  // Wait for 1 second to ensure the LEDs are initialized
-    ynv::board::hal::LEDArray::getInstance().init();
-    delay(1000);  // Wait for 1 second to ensure the LEDs are initialized
+    board.getButtons().registerCallback(onButtonPressed);
+    anims.registerStateChangeCallback(onAnimStateChanged);
 }
 
 void loop()
 {
-    static bool run = true;
+    board.handleEvents();             // Handle button events
+    anims.getCurrentAnim().update();  // Update the current animation
+    delay(10);
+}
 
-    while (run)
+/******* callbacks **********/
+void onButtonPressed(ynv::driverv5::Buttons::ButtonPress_t buttonEvent)
+{
+    switch (buttonEvent)
     {
-        ynv::board::hal::LEDArray::getInstance().patternTest();
+        case ynv::driverv5::Buttons::BTN_START_PRESSED:
+        {
+            Serial.println("BTN_START_PRESSED");
+            anims.getCurrentAnim().changeState();
+        }
+        break;
 
-        run = false;  // Stop after one complete cycle
+        case ynv::driverv5::Buttons::BTN_START_LONG_PRESSED:
+        {
+            Serial.println("BTN_START_LONG_PRESSED");
+            anims.getCurrentAnim().abort();
+        }
+        break;
+
+        case ynv::driverv5::Buttons::BTN_UP_PRESSED:
+        {
+            Serial.println("BTN_UP_PRESSED");
+            ynv::anim::EvalkitAnims::Anim_t nextAnim = anims.next();
+            Serial.println(anims.getAnimName(nextAnim).c_str());
+            board.getLEDArray().show(((unsigned int)nextAnim) + 1);
+        }
+        break;
+        case ynv::driverv5::Buttons::BTN_DOWN_PRESSED:
+
+        {
+            Serial.println("BTN_DOWN_PRESSED");
+            ynv::anim::EvalkitAnims::Anim_t previousAnim = anims.previous();
+            Serial.println(anims.getAnimName(previousAnim).c_str());
+            board.getLEDArray().show(((unsigned int)previousAnim) + 1);
+            // board.getLEDArray().show((unsigned int)anims.previous());
+        }
+        break;
+
+        default:
+            break;
     }
+}
 
-    delay(1000);  // Wait for 1 second
+void onAnimStateChanged(ynv::anim::AnimBase::State_t state)
+{
+    switch (state)
+    {
+        case ynv::anim::AnimBase::State_t::IDLE:
+            Serial.println("State_t::IDLE");
+            board.getRGBLED().blue();  // Set RGB LED to blue when idle
+            break;
+
+        case ynv::anim::AnimBase::State_t::RUNNING:
+            Serial.println("State_t::RUNNING");
+            board.getRGBLED().green();  // Set RGB LED to green when running
+            break;
+
+        case ynv::anim::AnimBase::State_t::PAUSED:
+            Serial.println("State_t::PAUSED");
+            board.getRGBLED().red();  // Set RGB LED to red when paused
+            break;
+
+        case ynv::anim::AnimBase::State_t::COMPLETED:
+            Serial.println("State_t::COMPLETED");
+            break;
+
+        case ynv::anim::AnimBase::State_t::ABORTED:
+            Serial.println("State_t::ABORTED");
+            break;
+
+        case ynv::anim::AnimBase::State_t::READY:
+            Serial.println("State_t::READY");
+            break;
+
+        default:
+            break;
+    }
 }

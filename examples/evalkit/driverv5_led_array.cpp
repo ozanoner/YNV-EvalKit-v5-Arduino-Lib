@@ -1,4 +1,4 @@
-#include "evalkitv5_led_array.h"
+#include "driverv5_led_array.h"
 
 #include <Arduino.h>
 
@@ -6,9 +6,7 @@
 
 namespace ynv
 {
-namespace board
-{
-namespace hal
+namespace driverv5
 {
 
 void LEDArray::init()
@@ -99,6 +97,5 @@ void LEDArray::patternTest()
     Serial.println("LEDs cleared.");
 }
 
-}  // namespace hal
-}  // namespace board
+}  // namespace driverv5
 }  // namespace ynv

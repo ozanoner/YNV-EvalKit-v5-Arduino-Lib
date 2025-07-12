@@ -1,12 +1,13 @@
 
-#include <array>
+#pragma once
+
 #include <Arduino.h>
+
+#include <array>
 
 namespace ynv
 {
-namespace board
-{
-namespace hal
+namespace driverv5
 {
 
 class LEDArray
@@ -22,6 +23,7 @@ class LEDArray
 
     void clear();
 
+    // 0 -> all leds off
     void show(unsigned int number);
 
     void patternTest();
@@ -33,9 +35,7 @@ class LEDArray
     LEDArray& operator=(const LEDArray&) = delete;
 
     inline static constexpr std::array<unsigned int, 7> LED_PINS = {LED_1, LED_2, LED_3, LED_4, LED_5, LED_6, LED_7};
-
 };
 
-}  // namespace hal
-}  // namespace board
+}  // namespace driverv5
 }  // namespace ynv
