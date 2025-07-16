@@ -17,9 +17,13 @@ class Anim15SegDecimalCounterDown : public Anim<ynv::ecd::DispDecimalNumber>
    protected:
     void transition() override
     {
-        static int counter = 0;
-        counter            = (counter - 1) % 100;    // Increment counter and wrap around at 100
+        static int counter = 99;
+
         m_display.show(counter / 10, counter % 10);  // Update display with new values
+        if (--counter == 0)
+        {
+            counter = 99;
+        }
     }
 };
 

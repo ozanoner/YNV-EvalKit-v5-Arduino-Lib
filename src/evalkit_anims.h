@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "anim.h"
+#include "app_config.h"
 #include "evalkit_displays.h"
 
 namespace ynv
@@ -46,7 +47,7 @@ class EvalkitAnims
         return instance;
     }
 
-    void init(ECDEvalkitDisplay_t displayType);
+    void init(const ynv::app::AppConfig_t* appConfig);
 
     Anim_t select(Anim_t anim, bool forward = true);
 
@@ -110,6 +111,8 @@ class EvalkitAnims
         {ANIM_3SEGBAR_COUNTER_DOWN, "Anim_t::ANIM_3SEGBAR_COUNTER_DOWN"},
         {ANIM_3SEGBAR_POS, "Anim_t::ANIM_3SEGBAR_POS"},
         {ANIM_CNT, "Anim_t::ANIM_NONE"}};
+
+    const ynv::app::AppConfig_t* m_appConfig = nullptr;
 };
 
 }  // namespace anim

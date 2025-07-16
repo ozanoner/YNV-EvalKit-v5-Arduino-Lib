@@ -127,7 +127,7 @@ class Anim : public AnimBase
     Anim(DisplayT& display) : m_display(display) { }
     virtual ~Anim() = default;
 
-    // Update the animation state in the loop
+    // Update the animation state in the Arduino loop
     void update() override
     {
         static int lastUpdate = 0;
@@ -138,6 +138,7 @@ class Anim : public AnimBase
             case State_t::READY:
                 setState(State_t::RUNNING);  // Transition to running state
                 m_display.set();
+                m_display.update();
                 break;
 
             case State_t::RUNNING:
@@ -146,19 +147,24 @@ class Anim : public AnimBase
                     transition();      // Call the transition function to change the display state
                     lastUpdate = now;  // Update the last update time
                 }
+                m_display.update();
                 break;
 
             case State_t::COMPLETED:      // Animation has completed
             case State_t::ABORTED:        // Animation has been stopped by the user
                 setState(State_t::IDLE);  // Reset to idle state after completion
                 m_display.reset();
+                m_display.update();
+                break;
+
+            case State_t::PAUSED:  // Animation is paused
+                m_display.update();
                 break;
 
             default:
+                // Do nothing for other states
                 break;
         }
-
-        m_display.update();
     }
 
    protected:

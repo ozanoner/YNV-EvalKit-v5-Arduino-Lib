@@ -3,7 +3,9 @@
 #include <Arduino.h>
 
 #include <array>
+#include <cassert>
 
+#include "app_config.h"
 #include "disp_3seg_bar.h"
 #include "disp_7seg_bar.h"
 #include "disp_decimal_number.h"
@@ -18,51 +20,55 @@ namespace ecd
 
 template <>
 inline ECD<1>::ECD(const std::array<int, 1>& pins)
-    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults())
+    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults()), m_driver(m_config, pins)
 {
-    m_config.coloringTime               = 700;
-    m_config.bleachingTime              = 800;
-    m_config.refreshColoringVoltage     = 1.4;
+    m_config.coloringTime  = 700;
+    m_config.bleachingTime = 800;
+    m_config.refreshColoringVoltage =
+        (int)((m_appConfig->supplyVoltage - 1.4f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
     m_config.refreshColorPulseTime      = 500;
-    m_config.refreshBleachingVoltage    = 1.1;
+    m_config.refreshBleachingVoltage    = (int)(1.1f * VOLTAGE_SCALE / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
     m_config.refreshBleachPulseTime     = 100;
-    m_config.refreshBleachLimitLVoltage = 0.45;
+    m_config.refreshBleachLimitLVoltage = (int)((0.45f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
 }
 
 template <>
 inline ECD<3>::ECD(const std::array<int, 3>& pins)
-    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults())
+    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults()), m_driver(m_config, pins)
 {
-    m_config.coloringTime            = 1200;
-    m_config.bleachingTime           = 1000;
-    m_config.refreshColoringVoltage  = 1.4;
+    m_config.coloringTime  = 1200;
+    m_config.bleachingTime = 1000;
+    m_config.refreshColoringVoltage =
+        (int)((m_appConfig->supplyVoltage - 1.4f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
     m_config.refreshColorPulseTime   = 150;
-    m_config.refreshBleachingVoltage = 1.1;
+    m_config.refreshBleachingVoltage = (int)(1.1f * VOLTAGE_SCALE / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
     m_config.refreshBleachPulseTime  = 300;
 }
 
 template <>
 inline ECD<7>::ECD(const std::array<int, 7>& pins)
-    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults())
+    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults()), m_driver(m_config, pins)
 {
-    m_config.refreshBleachLimitLVoltage = 0.4;
+    m_config.refreshBleachLimitLVoltage = (int)((0.4f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
     m_config.bleachingTime              = 1000;
 }
 
 template <>
 inline ECD<8>::ECD(const std::array<int, 8>& pins)
-    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults())
+    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults()), m_driver(m_config, pins)
 {
 }
 
 template <>
 inline ECD<15>::ECD(const std::array<int, 15>& pins)
-    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults())
+    : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults()), m_driver(m_config, pins)
 {
-    m_config.refreshColoringVoltage     = 1.4;
-    m_config.refreshColorLimitHVoltage  = 1.0;
+    m_config.refreshColoringVoltage =
+        (int)((m_appConfig->supplyVoltage - 1.4f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
+    m_config.refreshColorLimitHVoltage =
+        (int)((m_appConfig->supplyVoltage - 0.4f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
     m_config.refreshBleachPulseTime     = 100;
-    m_config.refreshBleachLimitLVoltage = 0.5;
+    m_config.refreshBleachLimitLVoltage = (int)((0.4f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB);
 }
 
 class EvalkitDisplays
@@ -90,10 +96,13 @@ class EvalkitDisplays
     // Operator[] to access displays by index
     ECDBase* operator[](ECDEvalkitDisplay_t idx) const { return m_displays[idx]; }
 
-    void init()
+    void init(const ynv::app::AppConfig_t* appConfig)
     {
-        ynv::ecd::ECDBase::init();  // Initialize the ECD driving
-        delay(100);                 // Wait for the ECD to stabilize
+        assert(appConfig != nullptr);
+        m_appConfig = appConfig;  // Store the application configuration
+
+        ynv::ecd::ECDBase::init(appConfig);  // Initialize the ECD driving
+        delay(100);                          // Wait for the ECD to stabilize
     }
 
    private:
@@ -139,6 +148,8 @@ class EvalkitDisplays
     // Array of pointers to base class for polymorphic access
     // IMPORTANT: use ECDEvalkitDisplay_t as index
     const std::array<ECDBase*, EVALKIT_DISP_CNT> m_displays;
+
+    const ynv::app::AppConfig_t* m_appConfig;
 };
 
 }  // namespace ecd

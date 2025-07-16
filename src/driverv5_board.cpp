@@ -3,13 +3,20 @@
 
 #include <Arduino.h>
 
+#include <cassert>
+
+#include "app_config.h"
+
 namespace ynv
 {
 namespace driverv5
 {
 
-void Board::init()
+void Board::init(const ynv::app::AppConfig_t* appConfig)
 {
+    assert(appConfig != nullptr);
+    m_appConfig = appConfig;
+
     pinMode(MCU_PWR_ON, OUTPUT);  // Keep the Board Power ON
     digitalWrite(MCU_PWR_ON, HIGH);
     delay(1000);

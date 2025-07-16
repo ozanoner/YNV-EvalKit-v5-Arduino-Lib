@@ -23,76 +23,76 @@ namespace ynv
 {
 namespace anim
 {
-void EvalkitAnims::init(ECDEvalkitDisplay_t displayType)
+void EvalkitAnims::init(const ynv::app::AppConfig_t* appConfig)
 {
-    auto& evalkitDisplays = ynv::ecd::EvalkitDisplays::getInstance();
-    m_displayType         = displayType;
+    assert(appConfig != nullptr);
+    assert(appConfig->displayIndex >= 0 &&
+           appConfig->displayIndex < static_cast<int>(ECDEvalkitDisplay_t::EVALKIT_DISP_CNT));
+    m_appConfig = appConfig;
 
-    switch (displayType)
+    auto& evalkitDisplays = ynv::ecd::EvalkitDisplays::getInstance();
+    m_displayType         = static_cast<ECDEvalkitDisplay_t>(appConfig->displayIndex);
+
+    switch (m_displayType)
     {
         case ECDEvalkitDisplay_t::EVALKIT_DISP_SINGLE_SEGMENT_DISPLAY:
-            m_anims[ANIM_TOGGLE] =
-                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::DispSingleSegment*>(evalkitDisplays[displayType]));
-            m_anims[ANIM_1SEG_ON] =
-                std::make_unique<Anim1SegOn>(*static_cast<ynv::ecd::DispSingleSegment*>(evalkitDisplays[displayType]));
+            m_anims[ANIM_TOGGLE] = std::make_unique<AnimToggle>(
+                *static_cast<ynv::ecd::DispSingleSegment*>(evalkitDisplays[m_displayType]));
+            m_anims[ANIM_1SEG_ON] = std::make_unique<Anim1SegOn>(
+                *static_cast<ynv::ecd::DispSingleSegment*>(evalkitDisplays[m_displayType]));
             break;
         case ECDEvalkitDisplay_t::EVALKIT_DISP_THREE_SEGMENT_BAR_DISPLAY:
             m_anims[ANIM_TOGGLE] =
-                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[displayType]));
+                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_3SEGBAR_COUNTER_UP] = std::make_unique<Anim3SegBarCounterUp>(
-                *static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_3SEGBAR_COUNTER_DOWN] = std::make_unique<Anim3SegBarCounterDown>(
-                *static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_3SEGBAR_POS] =
-                std::make_unique<Anim3SegBarPos>(*static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[displayType]));
+                std::make_unique<Anim3SegBarPos>(*static_cast<ynv::ecd::Disp3SegBar*>(evalkitDisplays[m_displayType]));
             break;
         case ECDEvalkitDisplay_t::EVALKIT_DISP_SEVEN_SEGMENT_BAR_DISPLAY:
             m_anims[ANIM_TOGGLE] =
-                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::Disp7SegBar*>(evalkitDisplays[displayType]));
+                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::Disp7SegBar*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_7SEGBAR_COUNTER_UP] = std::make_unique<Anim7SegBarCounterUp>(
-                *static_cast<ynv::ecd::Disp7SegBar*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::Disp7SegBar*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_7SEGBAR_COUNTER_DOWN] = std::make_unique<Anim7SegBarCounterDown>(
-                *static_cast<ynv::ecd::Disp7SegBar*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::Disp7SegBar*>(evalkitDisplays[m_displayType]));
             break;
         case ECDEvalkitDisplay_t::EVALKIT_DISP_DOT_NUMBER_DISPLAY:
             m_anims[ANIM_TOGGLE] =
-                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::DispDotNumber*>(evalkitDisplays[displayType]));
+                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::DispDotNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_7SEGNUM_COUNTER_UP] = std::make_unique<Anim7SegNumCounterUp>(
-                *static_cast<ynv::ecd::DispDotNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispDotNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_7SEGNUM_COUNTER_DOWN] = std::make_unique<Anim7SegNumCounterDown>(
-                *static_cast<ynv::ecd::DispDotNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispDotNumber*>(evalkitDisplays[m_displayType]));
             break;
         case ECDEvalkitDisplay_t::EVALKIT_DISP_DECIMAL_NUMBER_DISPLAY:
-            m_anims[ANIM_TOGGLE] =
-                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::DispDecimalNumber*>(evalkitDisplays[displayType]));
+            m_anims[ANIM_TOGGLE] = std::make_unique<AnimToggle>(
+                *static_cast<ynv::ecd::DispDecimalNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_15SEGDEC_COUNTER_UP] = std::make_unique<Anim15SegDecimalCounterUp>(
-                *static_cast<ynv::ecd::DispDecimalNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispDecimalNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_15SEGDEC_COUNTER_DOWN] = std::make_unique<Anim15SegDecimalCounterDown>(
-                *static_cast<ynv::ecd::DispDecimalNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispDecimalNumber*>(evalkitDisplays[m_displayType]));
             break;
         case ECDEvalkitDisplay_t::EVALKIT_DISP_SIGNED_NUMBER_DISPLAY:
             m_anims[ANIM_TOGGLE] =
-                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[displayType]));
+                std::make_unique<AnimToggle>(*static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_15SEGSIGNED_POSITIVE_COUNTER_UP] = std::make_unique<Anim15SegSignedPositiveCounterUp>(
-                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_15SEGSIGNED_POSITIVE_COUNTER_DOWN] = std::make_unique<Anim15SegSignedPositiveCounterDown>(
-                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_15SEGSIGNED_NEGATIVE_COUNTER_UP] = std::make_unique<Anim15SegSignedNegativeCounterUp>(
-                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[m_displayType]));
             m_anims[ANIM_15SEGSIGNED_NEGATIVE_COUNTER_DOWN] = std::make_unique<Anim15SegSignedNegativeCounterDown>(
-                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[displayType]));
+                *static_cast<ynv::ecd::DispSignedNumber*>(evalkitDisplays[m_displayType]));
             break;
 
         default:
             break;
     }
 
-    for (size_t i = 0; i < ANIM_CNT; i++)
-    {
-        if (m_anims[i] != nullptr)
-        {
-        }
-    }
+    evalkitDisplays[m_displayType]->printConfig();
 }
 
 EvalkitAnims::Anim_t EvalkitAnims::select(EvalkitAnims::Anim_t anim, bool forward)
