@@ -132,7 +132,7 @@ class Anim : public AnimBase
     // Update the animation state in the Arduino loop
     void update() override
     {
-        int now = millis();
+        unsigned long now = millis();
 
         switch (m_state)
         {
