@@ -3,13 +3,24 @@
 
 #include <Arduino.h>
 
+#include <cassert>
+
+#include "app_config.h"
+
 namespace ynv
 {
 namespace driverv5
 {
 
-void Board::init()
+void Board::init(const ynv::app::AppConfig_t* appConfig)
 {
+    assert(appConfig != nullptr);
+    m_appConfig = appConfig;
+
+    assert(m_appConfig->analogResolution > 8 && m_appConfig->analogResolution <= 16);
+    analogReadResolution(m_appConfig->analogResolution);
+    analogWriteResolution(m_appConfig->analogResolution);
+
     pinMode(MCU_PWR_ON, OUTPUT);  // Keep the Board Power ON
     digitalWrite(MCU_PWR_ON, HIGH);
     delay(1000);

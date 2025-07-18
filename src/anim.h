@@ -4,6 +4,8 @@
 
 #include <Arduino.h>
 
+#include <memory>
+
 namespace ynv
 {
 namespace anim
@@ -124,46 +126,55 @@ class Anim : public AnimBase
    public:
     static constexpr int TRANSITION_RATE_MS = 3000;  // Transition rate to the next state in milliseconds
 
-    Anim(DisplayT& display) : m_display(display) { }
+    Anim(std::shared_ptr<DisplayT> display) : m_display(display) { }
     virtual ~Anim() = default;
 
-    // Update the animation state in the loop
+    // Update the animation state in the Arduino loop
     void update() override
     {
-        static int lastUpdate = 0;
-        int        now        = millis();
+        unsigned long now = millis();
 
         switch (m_state)
         {
             case State_t::READY:
                 setState(State_t::RUNNING);  // Transition to running state
-                m_display.set();
+                m_display->set();
+                m_display->update();
+                m_lastUpdate = now;
                 break;
 
             case State_t::RUNNING:
-                if ((now - lastUpdate) >= TRANSITION_RATE_MS)
+                if ((now - m_lastUpdate) >= TRANSITION_RATE_MS)
                 {
-                    transition();      // Call the transition function to change the display state
-                    lastUpdate = now;  // Update the last update time
+                    transition();        // Call the transition function to change the display state
+                    m_lastUpdate = now;  // Update the last update time
                 }
+                m_display->update();
                 break;
 
             case State_t::COMPLETED:      // Animation has completed
             case State_t::ABORTED:        // Animation has been stopped by the user
                 setState(State_t::IDLE);  // Reset to idle state after completion
-                m_display.reset();
+                m_display->reset();
+                m_display->update();
+                break;
+
+            case State_t::PAUSED:  // Animation is paused
+                m_display->update();
                 break;
 
             default:
+                // Do nothing for other states
                 break;
         }
-
-        m_display.update();
     }
 
    protected:
-    DisplayT&    m_display;         // Reference to the display being animated
-    virtual void transition() = 0;  // Transition the display to the next state in the animation
+    std::shared_ptr<DisplayT> m_display;         // Reference to the display being animated
+    virtual void              transition() = 0;  // Transition the display to the next state in the animation
+
+   private:
+    unsigned long m_lastUpdate = 0;  // Last update time in milliseconds
 };
 
 }  // namespace anim

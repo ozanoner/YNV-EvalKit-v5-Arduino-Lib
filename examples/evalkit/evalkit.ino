@@ -1,12 +1,17 @@
 
 #include <Arduino.h>
 
+#include "app_config.h"
+#include "app_config_defs.h"
 #include "driverv5_board.h"
 #include "evalkit_anims.h"
 #include "evalkit_displays.h"
 
-// Specify the display type attached to the EvalKit v5
-#define DISPLAY_ATTACHED ynv::ecd::EvalkitDisplays::ECDEvalkitDisplay_t::EVALKIT_DISP_DOT_NUMBER_DISPLAY
+constexpr ynv::app::AppConfig_t appConfig = {.displayIndex     = DISPLAY_ATTACHED,
+                                             .supplyVoltage    = SUPPLY_VOLTAGE,
+                                             .activeDriving    = ACTIVE_DRIVING,
+                                             .analogResolution = ANALOG_RESOLUTION,
+                                             .wireAddress      = WIRE_ADDRESS};
 
 auto& board    = ynv::driverv5::Board::getInstance();
 auto& displays = ynv::ecd::EvalkitDisplays::getInstance();
@@ -14,9 +19,9 @@ auto& anims    = ynv::anim::EvalkitAnims::getInstance();
 
 void setup()
 {
-    displays.init();               // Initialize the ECD displays
-    board.init();                  // Initialize the board
-    anims.init(DISPLAY_ATTACHED);  // Initialize the animations for the attached display
+    displays.init(&appConfig);  // Initialize the ECD displays
+    board.init(&appConfig);     // Initialize the board
+    anims.init(&appConfig);     // Initialize the animations for the attached display
 
     board.getButtons().registerCallback(onButtonPressed);
     anims.registerStateChangeCallback(onAnimStateChanged);

@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+#include "app_config.h"
 #include "driverv5_buttons.h"
 #include "driverv5_led_array.h"
 #include "driverv5_rgb_led.h"
@@ -21,7 +22,7 @@ class Board
         return instance;
     }
 
-    void init();
+    void init(const ynv::app::AppConfig_t* appConfig);
 
     LEDArray& getLEDArray() { return m_ledArray; }
     RGBLED&   getRGBLED() { return m_rgbLED; }
@@ -39,6 +40,8 @@ class Board
     LEDArray& m_ledArray = LEDArray::getInstance();
     RGBLED&   m_rgbLED   = RGBLED::getInstance();
     Buttons&  m_buttons  = Buttons::getInstance();
+
+    const ynv::app::AppConfig_t* m_appConfig = nullptr;
 };
 
 }  // namespace driverv5
