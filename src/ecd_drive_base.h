@@ -12,6 +12,8 @@ namespace ecd
 
 struct ECDConfig_t
 {
+    int maxAnalogValue;  // Maximum analog value for the ECD
+
     // Color & Bleach Configs
     int coloringVoltage;  // V - Color Pulse Voltage mapped to ADC_DAC_MAX_LSB
     int coloringTime;     // ms - Color time
@@ -37,6 +39,8 @@ struct ECDConfig_t
         Serial.println(F("-------------------------------------------------------------"));
         Serial.println(F("Parameter                  | Value"));
         Serial.println(F("-------------------------------------------------------------"));
+        Serial.print(F("maxAnalogValue             | "));
+        Serial.println(maxAnalogValue);
         Serial.print(F("coloringVoltage            | "));
         Serial.println(coloringVoltage);
         Serial.print(F("coloringTime               | "));
@@ -69,7 +73,7 @@ template <int SEGMENT_COUNT>
 class ECDDriveBase
 {
    public:
-    ECDDriveBase(const ECDConfig_t& config, const std::array<int, SEGMENT_COUNT>& pins) : m_config(config), m_pins(pins)
+    ECDDriveBase(const ECDConfig_t* config, const std::array<int, SEGMENT_COUNT>* pins) : m_config(config), m_pins(pins)
     {
     }
 
@@ -80,8 +84,8 @@ class ECDDriveBase
                        ) = 0;
 
    protected:
-    const ECDConfig_t&                    m_config;  // Configuration for the ECD
-    const std::array<int, SEGMENT_COUNT>& m_pins;    // Pin numbers for the segments
+    const ECDConfig_t*                    m_config;  // Configuration for the ECD
+    const std::array<int, SEGMENT_COUNT>* m_pins;    // Pin numbers for the segments
 
     void enableCounterElectrode(int val)
     {

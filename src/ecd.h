@@ -24,40 +24,35 @@ namespace ecd
 class ECDBase
 {
    public:
-    ~ECDBase() { }
+    ~ECDBase() = default;
 
-    static void init(const ynv::app::AppConfig_t* appConfig);  // Initialize the ECD hardware
-
+    virtual void init()                               = 0;  // Initialize the ECD
     virtual void reset()                              = 0;  // Reset the ECD to bleach state
     virtual void set()                                = 0;  // Set all segments to color state
     virtual void set(const std::vector<bool>& states) = 0;  // Set segments to specified states
     virtual void update()                             = 0;  // Apply m_nextStates to hardware
     virtual void toggle()                             = 0;  // Toggle the state of all segments
     virtual void printConfig() const                  = 0;  // Print the configuration of the ECD
-
-   protected:
-    static constexpr int ADC_DAC_RESOLUTION = 10;                             // 10-bit resolution for ADC and DAC
-    static constexpr int ADC_DAC_MAX_LSB    = (1 << ADC_DAC_RESOLUTION) - 1;  // Maximum value for 10-bit resolution
-
-    // Scale factor for voltage mapping, 0.67 for 2V, 1.0 for 3V, 1.1 for 3.3V, etc.
-    // Update m_appConfig->supplyVoltage if using a different voltage.
-    static constexpr float VOLTAGE_SCALE = 1.0f;
-
-    inline static const ynv::app::AppConfig_t* m_appConfig = nullptr;
 };
 
-template <int SEGMENT_COUNT = 1>
+template <int SEGMENT_COUNT>
 class ECD : public ECDBase
 {
    public:
-    ECD(const std::array<int, SEGMENT_COUNT>& pins)
-        : m_pins(pins), m_states({}), m_nextStates({}), m_config(getConfigDefaults()), m_driver(m_config, pins)
+    ECD(const std::array<int, SEGMENT_COUNT>* pins, const ynv::app::AppConfig_t* appConfig)
+        : m_pins(pins), m_states({}), m_nextStates({}), m_driver(&m_config, pins), m_appConfig(appConfig)
     {
+        assert(m_appConfig != nullptr);
     }
 
     ~ECD() = default;
 
-    using ECDBase::m_appConfig;
+    void init() override
+    {
+        m_config.maxAnalogValue = (1 << m_appConfig->analogResolution) - 1;  // Set max analog value based on resolution
+        initConfig();  // Initialize the ECD with default configuration
+        validateConfig();
+    }
 
     void reset() override
     {
@@ -83,7 +78,6 @@ class ECD : public ECDBase
         std::copy(states.begin(), states.end(), m_nextStates.begin());
     }
 
-    // Implements the active driving of the ECD segments as described in the datasheet.
     // Animation will call this method to apply the next states to the hardware in the Arduino loop.
     // NOTE: The total execution time may exceed one cycle of the animation.
     void update() override
@@ -97,47 +91,45 @@ class ECD : public ECDBase
     }
 
    protected:
-    const std::array<int, SEGMENT_COUNT> m_pins;        // Array to hold segment pin numbers
-    std::array<bool, SEGMENT_COUNT>      m_states;      // Array to hold segment states (bleach=false or color=true)
-    std::array<bool, SEGMENT_COUNT>      m_nextStates;  // Array to hold next states for segments
-    ECDConfig_t                          m_config;      // Configuration for the ECD
+    const std::array<int, SEGMENT_COUNT>* m_pins;        // Array to hold segment pin numbers
+    std::array<bool, SEGMENT_COUNT>       m_states;      // Array to hold segment states (bleach=false or color=true)
+    std::array<bool, SEGMENT_COUNT>       m_nextStates;  // Array to hold next states for segments
+    ECDConfig_t                           m_config;      // Configuration for the ECD
 #if ACTIVE_DRIVING
     ECDDriveActive<SEGMENT_COUNT> m_driver;  // Active driving algorithm
 #else
     ECDDrivePassive<SEGMENT_COUNT> m_driver;  // Passive driving algorithm
 #endif
+    const ynv::app::AppConfig_t* m_appConfig;
 
-    static constexpr ECDConfig_t getConfigDefaults()
+    virtual void initConfig() = 0;  // Initialize the ECD with default configuration
+
+    void validateConfig()
     {
-        return {
-            // coloringVoltage
-            (int)((m_appConfig->supplyVoltage - 1.5f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB),
-            500,  // coloringTime
+        assert(m_config.maxAnalogValue > 0);
+        assert(m_config.coloringVoltage > 0);
+        assert(m_config.bleachingVoltage > 0);
+        assert(m_config.refreshColoringVoltage > 0);
+        assert(m_config.refreshBleachingVoltage > 0);
+        assert(m_config.refreshColorLimitHVoltage > 0);
+        assert(m_config.refreshColorLimitLVoltage > 0);
+        assert(m_config.refreshBleachLimitHVoltage > 0);
+        assert(m_config.refreshBleachLimitLVoltage > 0);
+        assert(m_config.coloringTime > 0);
+        assert(m_config.bleachingTime > 0);
+        assert(m_config.refreshColorPulseTime > 0);
+        assert(m_config.refreshBleachPulseTime > 0);
 
-            // bleachingVoltage
-            (int)(1.2f * VOLTAGE_SCALE / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB),
-            500,  // bleachingTime
-
-            // refreshColoringVoltage
-            (int)((m_appConfig->supplyVoltage - 1.3f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB),
-            100,  // refreshColorPulseTime
-
-            // refreshColorLimitHVoltage
-            (int)((m_appConfig->supplyVoltage - 0.2f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB),
-            // refreshColorLimitLVoltage
-            (int)((m_appConfig->supplyVoltage / 2 + 0.9f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage *
-                  ADC_DAC_MAX_LSB),
-
-            // refreshBleachingVoltage
-            (int)(0.9f * VOLTAGE_SCALE / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB),
-            50,  // refreshBleachPulseTime
-
-            // refreshBleachLimitHVoltage
-            (int)((m_appConfig->supplyVoltage / 2 - 0.2f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage *
-                  ADC_DAC_MAX_LSB),
-            // refreshBleachLimitLVoltage
-            (int)((0.3f * VOLTAGE_SCALE) / m_appConfig->supplyVoltage * ADC_DAC_MAX_LSB),
-        };
+        assert(m_config.coloringVoltage < m_config.maxAnalogValue);
+        assert(m_config.bleachingVoltage < m_config.maxAnalogValue);
+        assert(m_config.refreshColoringVoltage < m_config.maxAnalogValue);
+        assert(m_config.refreshBleachingVoltage < m_config.maxAnalogValue);
+        assert(m_config.refreshColorLimitHVoltage < m_config.maxAnalogValue &&
+               m_config.refreshColorLimitHVoltage > (m_config.maxAnalogValue / 2));
+        assert(m_config.refreshColorLimitLVoltage < m_config.maxAnalogValue &&
+               m_config.refreshColorLimitLVoltage > (m_config.maxAnalogValue / 2));
+        assert(m_config.refreshBleachLimitHVoltage < (m_config.maxAnalogValue / 2));
+        assert(m_config.refreshBleachLimitLVoltage < (m_config.maxAnalogValue / 2));
     }
 
     static constexpr std::array<uint8_t, 10> numberMask()

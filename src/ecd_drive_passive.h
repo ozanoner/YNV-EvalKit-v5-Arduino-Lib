@@ -24,24 +24,24 @@ class ECDDrivePassive : public ECDDriveBase<SEGMENT_COUNT>
     void drive(std::array<bool, SEGMENT_COUNT>&       currentStates,
                const std::array<bool, SEGMENT_COUNT>& nextStates) override
     {
-        enableCounterElectrode(512);
+        enableCounterElectrode((int)(m_config->maxAnalogValue / 2));
         for (int i = 0; i < SEGMENT_COUNT; ++i)
         {
-            pinMode(m_pins[i], OUTPUT);
+            pinMode((*m_pins)[i], OUTPUT);
             if (nextStates[i])
             {
-                digitalWrite(m_pins[i], HIGH);
+                digitalWrite((*m_pins)[i], HIGH);
             }
             else
             {
-                digitalWrite(m_pins[i], LOW);
+                digitalWrite((*m_pins)[i], LOW);
             }
             currentStates[i] = nextStates[i];
         }
         delay(50);  // Allow time for the segments to stabilize
         for (int i = 0; i < SEGMENT_COUNT; ++i)
         {
-            pinMode(m_pins[i], INPUT);  // Set the segment pins to input to disable them
+            pinMode((*m_pins)[i], INPUT);  // Set the segment pins to input to disable them
         }
         disableCounterElectrode();
     }

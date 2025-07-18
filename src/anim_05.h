@@ -12,7 +12,8 @@ namespace anim
 class Anim15SegSignedNegativeCounterDown : public Anim<ynv::ecd::DispSignedNumber>
 {
    public:
-    Anim15SegSignedNegativeCounterDown(ynv::ecd::DispSignedNumber& display) : Anim<ynv::ecd::DispSignedNumber>(display)
+    Anim15SegSignedNegativeCounterDown(std::shared_ptr<ynv::ecd::DispSignedNumber> display)
+        : Anim<ynv::ecd::DispSignedNumber>(display)
     {
     }
 
@@ -20,8 +21,11 @@ class Anim15SegSignedNegativeCounterDown : public Anim<ynv::ecd::DispSignedNumbe
     void transition() override
     {
         static int counter = 1;
-        counter            = (counter + 1) % 100;          // Increment counter and wrap around at 100
-        m_display.show(counter / 10, counter % 10, true);  // Update display with new values
+        m_display->show(counter / 10, counter % 10, true);  // Update display with new values
+        if (++counter == 100)
+        {
+            counter = 1;
+        }
     }
 };
 

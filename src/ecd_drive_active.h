@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 #include "ecd_drive_base.h"
 
@@ -42,27 +43,27 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
         {
             if (currentStates[i] == nextStates[i])
             {  // refresh
-                pinMode(m_pins[i], INPUT);
-                analogVal = analogRead(m_pins[i]);
+                pinMode((*m_pins)[i], INPUT);
+                analogVal = analogRead((*m_pins)[i]);
 
-                if (currentStates[i] && (analogVal < m_config.refreshColorLimitLVoltage))
+                if (currentStates[i] && (analogVal < m_config->refreshColorLimitLVoltage))
                 {
-                    colorPins.push_back(m_pins[i]);
+                    colorPins.push_back((*m_pins)[i]);
                 }
-                else if (!currentStates[i] && (analogVal > m_config.refreshBleachLimitHVoltage))
+                else if (!currentStates[i] && (analogVal > m_config->refreshBleachLimitHVoltage))
                 {
-                    bleachPins.push_back(m_pins[i]);
+                    bleachPins.push_back((*m_pins)[i]);
                 }
             }
             else
             {  // change state
                 if (nextStates[i])
                 {
-                    colorPins.push_back(m_pins[i]);
+                    colorPins.push_back((*m_pins)[i]);
                 }
                 else
                 {
-                    bleachPins.push_back(m_pins[i]);
+                    bleachPins.push_back((*m_pins)[i]);
                 }
                 currentStates[i] = nextStates[i];  // Update the current state
             }
@@ -70,13 +71,13 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
 
         if (colorPins.size() > 0)
         {
-            enableCounterElectrode(m_config.coloringVoltage);
+            enableCounterElectrode(m_config->coloringVoltage);
             for (const auto& pin : colorPins)
             {
                 pinMode(pin, OUTPUT);
                 digitalWrite(pin, HIGH);
             }
-            delay(m_config.coloringTime);
+            delay(m_config->coloringTime);
             for (const auto& pin : colorPins)
             {
                 pinMode(pin, INPUT);  // High-Z
@@ -85,13 +86,13 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
 
         if (bleachPins.size() > 0)
         {
-            enableCounterElectrode(m_config.bleachingVoltage);
+            enableCounterElectrode(m_config->bleachingVoltage);
             for (const auto& pin : bleachPins)
             {
                 pinMode(pin, OUTPUT);
                 digitalWrite(pin, LOW);
             }
-            delay(m_config.bleachingTime);
+            delay(m_config->bleachingTime);
             for (const auto& pin : bleachPins)
             {
                 pinMode(pin, INPUT);  // High-Z
@@ -100,7 +101,7 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
 
         if (colorRefreshPins.size() > 0)
         {
-            enableCounterElectrode(m_config.refreshColoringVoltage);
+            enableCounterElectrode(m_config->refreshColoringVoltage);
 
             bool done {false};
             int  retries {0};
@@ -112,7 +113,7 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
                     pinMode(pin, OUTPUT);
                     digitalWrite(pin, HIGH);
                 }
-                delay(m_config.refreshColorPulseTime);
+                delay(m_config->refreshColorPulseTime);
 
                 for (const auto& pin : colorRefreshPins)
                 {
@@ -125,7 +126,7 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
                 for (const auto& pin : tmp)
                 {
                     analogVal = analogRead(pin);
-                    if (analogVal < m_config.refreshColorLimitHVoltage)
+                    if (analogVal < m_config->refreshColorLimitHVoltage)
                     {
                         colorRefreshPins.push_back(pin);
                     }
@@ -143,7 +144,7 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
 
         if (bleachRefreshPins.size() > 0)
         {
-            enableCounterElectrode(m_config.refreshBleachingVoltage);
+            enableCounterElectrode(m_config->refreshBleachingVoltage);
 
             bool done {false};
             int  retries {0};
@@ -155,7 +156,7 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
                     pinMode(pin, OUTPUT);
                     digitalWrite(pin, LOW);
                 }
-                delay(m_config.refreshBleachPulseTime);
+                delay(m_config->refreshBleachPulseTime);
 
                 for (const auto& pin : bleachRefreshPins)
                 {
@@ -168,7 +169,7 @@ class ECDDriveActive : public ECDDriveBase<SEGMENT_COUNT>
                 for (const auto& pin : tmp)
                 {
                     analogVal = analogRead(pin);
-                    if (analogVal > m_config.refreshBleachLimitLVoltage)
+                    if (analogVal > m_config->refreshBleachLimitLVoltage)
                     {
                         bleachRefreshPins.push_back(pin);
                     }
