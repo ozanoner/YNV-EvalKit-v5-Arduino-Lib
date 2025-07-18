@@ -174,7 +174,7 @@ class Anim : public AnimBase
     virtual void              transition() = 0;  // Transition the display to the next state in the animation
 
    private:
-    int m_lastUpdate = 0;  // Last update time in milliseconds
+    unsigned long m_lastUpdate = 0;  // Last update time in milliseconds
 };
 
 }  // namespace anim
