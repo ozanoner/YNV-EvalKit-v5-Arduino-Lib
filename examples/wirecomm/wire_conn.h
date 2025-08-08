@@ -19,7 +19,7 @@ namespace ynv
 {
 namespace driverv5
 {
-/** * @class WireConnection
+/** @class WireConnection
  * @brief Handles I2C communication using the Wire library
  * This class initializes the Wire connection and provides a callback mechanism for handling incoming data.
  * It is designed to be used as a singleton.
