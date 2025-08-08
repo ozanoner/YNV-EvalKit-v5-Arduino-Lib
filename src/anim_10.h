@@ -18,8 +18,8 @@ class Anim7SegNumCounterDown : public Anim<ynv::ecd::DispDotNumber>
    protected:
     void transition() override
     {
-        int number = 0;                  // Initialize number to 0
-        number     = (number - 1) % 10;  // Decrement number and wrap around at 10
+        static int number = 0;                  // Initialize number to 0
+        number            = (number - 1) % 10;  // Decrement number and wrap around at 10
         m_display->show(number);
     }
 };

@@ -113,7 +113,7 @@ class EvalkitDisplays
     const std::array<int, 3>  threeSegmentBarDisplayPins {PIN_SEG_2, PIN_SEG_1, PIN_SEG_3};
     const std::array<int, 7>  sevenSegmentBarDisplayPins {PIN_SEG_4, PIN_SEG_3, PIN_SEG_5, PIN_SEG_2,
                                                          PIN_SEG_6, PIN_SEG_1, PIN_SEG_7};
-    const std::array<int, 8>  dotNumberDisplayPins {PIN_SEG_8, PIN_SEG_7, PIN_SEG_5, PIN_SEG_6,
+    const std::array<int, 8>  dotNumberDisplayPins {PIN_SEG_6, PIN_SEG_8, PIN_SEG_7, PIN_SEG_5,
                                                    PIN_SEG_4, PIN_SEG_3, PIN_SEG_1, PIN_SEG_2};
     const std::array<int, 15> decimalNumberDisplayPins {PIN_SEG_8,  PIN_SEG_1,  PIN_SEG_7, PIN_SEG_6,  PIN_SEG_5,
                                                         PIN_SEG_4,  PIN_SEG_2,  PIN_SEG_3, PIN_SEG_14, PIN_SEG_13,

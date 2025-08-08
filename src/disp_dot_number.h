@@ -17,11 +17,20 @@ class DispDotNumber : public ECD<8>
     void show(uint8_t number, bool dot = true)
     {
         number %= 10;  // Ensure number is within 0-9
-        for (int i = 0; i < 7; ++i)
+        // TODO: bug for this display.
+        // Serial.print(F("DispDotNumber::show: number="));
+        // Serial.println(number);
+        m_nextStates[0] = dot;  // Set the dot state
+        for (int i = 1; i < 8; ++i)
         {
             m_nextStates[i] = bitRead(numberMask()[number], i);
         }
-        m_nextStates[7] = dot;  // Set the dot state
+        // Serial.print(F("DispDotNumber::show: next="));
+        // for (int i = 0; i < 8; ++i)
+        // {
+        //     Serial.print(m_nextStates[i]);
+        // }
+        // Serial.println();
     }
 
    protected:
