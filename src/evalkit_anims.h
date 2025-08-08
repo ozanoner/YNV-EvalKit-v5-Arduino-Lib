@@ -1,3 +1,15 @@
+/**
+ * @file evalkit_anims.h
+ * @brief  Evaluation Kit animations interface.
+ * This header defines the EvalkitAnims class, which manages different animations
+ * available on the Ynvisible Evaluation Kit v5. It provides a unified interface for
+ * initializing and accessing the animations.
+ * @version 0.1
+ * @date 2025-08-08
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 
 #pragma once
 

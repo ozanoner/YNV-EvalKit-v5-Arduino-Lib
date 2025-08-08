@@ -1,4 +1,14 @@
-
+/**
+ * @file driverv5_board.h
+ * @brief  Driver V5 board HAL.
+ * This header defines the Driver V5 board interface, including buttons, LED array, and RGB LED.
+ * It provides a singleton interface for easy access to the board components.
+ * @version 0.1
+ * @date 2025-08-08
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 #pragma once
 
 #include <Arduino.h>
@@ -13,6 +23,10 @@ namespace ynv
 namespace driverv5
 {
 
+/**
+ * @brief  Driver V5 board HAL.
+ * This class provides access to the board's components, including buttons, LED array, and RGB LED.
+ */
 class Board
 {
    public:

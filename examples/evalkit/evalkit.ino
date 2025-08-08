@@ -1,3 +1,11 @@
+/**
+ * @file evalkit.ino
+ * @brief Evaluation Kit example for Arduino
+ * This example demonstrates how to use the EvalKit v5 with various animations and displays.
+ * @version 0.1
+ * @date 2025-08-08
+ * @copyright Copyright (c) 2025
+ */
 
 #include <Arduino.h>
 
