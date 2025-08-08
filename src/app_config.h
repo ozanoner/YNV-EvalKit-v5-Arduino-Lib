@@ -1,4 +1,13 @@
-
+/**
+ * @file app_config.h
+ * @brief  Application configuration header
+ * This header defines the application configuration structure used throughout the library.
+ * @version 0.1
+ * @date 2025-08-08
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 #pragma once
 
 namespace ynv
@@ -15,7 +24,7 @@ struct AppConfig_t
     int activeDriving;
     // ADC/DAC resolution
     int analogResolution;
-    // I2C address of the Driver V5 board
+    // I2C address of the Driver V5 board to use with other MCUs
     int wireAddress;
 };
 }  // namespace app

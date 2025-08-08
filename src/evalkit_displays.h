@@ -1,3 +1,16 @@
+/**
+ * @file evalkit_displays.h
+ * @brief  Evaluation Kit display interface.
+ * This header defines the EvalkitDisplays class, which manages different display types
+ * available on the Ynvisible Evaluation Kit v5. It provides a unified interface for
+ * initializing and accessing the displays.
+ * @version 0.1
+ * @date 2025-08-08
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #pragma once
 
 #include <Arduino.h>
@@ -19,6 +32,10 @@ namespace ynv
 namespace ecd
 {
 
+/**
+ * @brief  Evaluation Kit display manager.
+ * This class manages the different display types available on the Ynvisible Evaluation Kit v5.
+ */
 class EvalkitDisplays
 {
    public:
