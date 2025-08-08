@@ -23,6 +23,7 @@ void WireConnection::init(const ynv::app::AppConfig_t* appConfig, WireDataHandle
     m_callback = cb;
 
     Wire.begin(appConfig->wireAddress);
+    m_wireReady = true;
     Wire.onReceive(onWireEvent);  // Register the receive event handler
 }
 
