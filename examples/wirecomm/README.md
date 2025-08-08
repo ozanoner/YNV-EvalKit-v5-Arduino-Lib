@@ -41,7 +41,7 @@ This example demonstrates how to use the YNV-EvalKit-v5-Arduino-Lib to communica
 
 - Add new commands in `McuComm::Command_t` enum.
 - Implement additional command handling logic in `McuComm`.
-- Customize I2C address and configuration in `app_config_def.h`.
+- Customize I2C address and configuration in `app_config_defs.h`.
 
 ## License
 
