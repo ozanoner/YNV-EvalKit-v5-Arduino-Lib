@@ -17,7 +17,7 @@ namespace driverv5
 void WireConnection::init(const ynv::app::AppConfig_t* appConfig, WireDataHandler_t cb)
 {
     assert(appConfig != nullptr);
-    assert(appConfig->wireAddress >= 0 && appConfig->wireAddress < 0x7F);  // Valid I2C address range
+    assert(appConfig->wireAddress >= 0x08 && appConfig->wireAddress <= 0x77);  // Valid 7-bit I2C address range (0x08-0x77)
 
     assert(cb != nullptr);  // Callback function must not be null
     m_callback = cb;
