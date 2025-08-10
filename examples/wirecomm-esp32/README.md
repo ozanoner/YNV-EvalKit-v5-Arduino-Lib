@@ -25,7 +25,7 @@ It demonstrates I2C master communication with the Ynvisible EvalKit running the 
 
 3. **Navigate to the companion app directory:**
    ```sh
-   cd /home/ozan/projects/ynvisible/YNV-EvalKit-v5-Arduino-Lib/examples/wirecomm-esp32
+   cd examples/wirecomm-esp32
 
 4. **Flash the application on the ESP32 devkit:**
     ```sh

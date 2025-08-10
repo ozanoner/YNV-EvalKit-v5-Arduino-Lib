@@ -62,7 +62,7 @@ esp_err_t I2CConnection::send(const uint8_t* const data, size_t len)
     }
 
     // 100ms timeout
-    err = i2c_master_transmit(m_deviceHandle, data, len, pdTICKS_TO_MS(100));
+    err = i2c_master_transmit(m_deviceHandle, data, len, pdMS_TO_TICKS(100));
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to send command: %s", esp_err_to_name(err));
 
     return ESP_OK;

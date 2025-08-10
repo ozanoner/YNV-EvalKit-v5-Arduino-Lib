@@ -1,3 +1,13 @@
+/**
+ * @file main.cpp
+ * @author your name (you@domain.com)
+ * @brief  Main application entry point for the ESP32 MCU communication example.
+ * @version 0.1
+ * @date 2025-08-10
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
