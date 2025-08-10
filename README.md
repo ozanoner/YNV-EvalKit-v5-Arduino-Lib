@@ -57,6 +57,9 @@ Edit `app_config_defs.h` to specify your hardware and application settings. Exam
 - **`examples/wirecomm/wirecomm.ino`**  
   Shows I2C communication between the EvalKit and another MCU.
 
+- **`examples/wirecomm-esp32`**
+  The ESP32 companion app to test the wirecomm example. 
+
 Each example includes a README with usage instructions.
 
 ---
