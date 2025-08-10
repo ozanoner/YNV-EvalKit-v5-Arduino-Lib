@@ -1,6 +1,8 @@
 # YNV-EvalKit-v5-Arduino-Lib: `wirecomm` Example
 
-This example demonstrates how to use the YNV-EvalKit-v5-Arduino-Lib to communicate with the evaluation kit over I2C using the Arduino Wire library. It shows how to set up the I2C connection, handle incoming commands, and interact with the display and button events.
+This example demonstrates how to use the YNV-EvalKit-v5-Arduino-Lib to communicate with the evaluation kit over I2C using the Arduino Wire library. It shows how to set up the I2C connection, handle incoming commands, and interact with the display and button events.  
+
+Note: Use `examples/wirecomm-esp32` as the complementing application. It is developed for ESP32 and communicates with the Ynvisible Evalkit-v5 over I2C.
 
 ## Features
 
