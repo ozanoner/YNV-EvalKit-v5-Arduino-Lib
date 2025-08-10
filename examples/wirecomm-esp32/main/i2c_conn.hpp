@@ -1,3 +1,14 @@
+/**
+ * @file i2c_conn.hpp
+ * @brief I2C connection handler.
+ * This class manages the I2C connection to the Ynvisible EvalKit.
+ * @version 0.1
+ * @date 2025-08-10
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #pragma once
 
 #include <cinttypes>

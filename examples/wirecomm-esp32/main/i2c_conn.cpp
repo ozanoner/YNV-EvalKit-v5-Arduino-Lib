@@ -1,3 +1,12 @@
+/**
+ * @file i2c_conn.cpp
+ * @brief I2C connection handler implementation.
+ * @version 0.1
+ * @date 2025-08-10
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 
 #include "i2c_conn.hpp"
 

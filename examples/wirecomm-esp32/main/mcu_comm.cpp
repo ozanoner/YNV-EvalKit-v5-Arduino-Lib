@@ -1,3 +1,12 @@
+/**
+ * @file mcu_comm.cpp
+ * @brief MCU communication handler for I2C commands.
+ * @version 0.1
+ * @date 2025-08-10
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 
 #include "mcu_comm.hpp"
 
